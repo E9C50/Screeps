@@ -27,7 +27,10 @@ function safemodeChecker() {
 
 module.exports.loop = function () {
     // 利用空闲CPU生成Pixel
-    Game.cpu.generatePixel();
+    if (typeof Game.cpu.generatePixel === 'function') {
+        console.log(Game.cpu.bucket);
+        Game.cpu.generatePixel();
+    }
 
     // 检测敌人和攻击，开启安全模式
     safemodeChecker();
