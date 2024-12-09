@@ -10,14 +10,16 @@ var roomUtils = require('utils.room');
 const MAX_CARRYER = 2;
 const MAX_PIONEER = 2;
 const MAX_BUILDER = 4;
-const MAX_UPGRADER = 4;
+const MAX_UPGRADER = 10;
 
 // 矿工数量自动根据坑位计算
 var MAX_HARVESTER0 = 0;
 var MAX_HARVESTER1 = 0;
 
 function genbodyHarvester(maxEnergy) {
-    if (maxEnergy >= 500) { // 建建建建带动 500
+    if (maxEnergy >= 800) { // 建建建建建建建带动 800
+        return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE]
+    } else if (maxEnergy >= 500) { // 建建建建带动 500
         return [WORK, WORK, WORK, WORK, CARRY, MOVE]
     } else if (maxEnergy >= 300) { // 建建带动 300
         return [WORK, WORK, CARRY, MOVE]
@@ -25,7 +27,9 @@ function genbodyHarvester(maxEnergy) {
 }
 
 function genbodyCarryer(maxEnergy) {
-    if (maxEnergy >= 500) { // 带带带带带动动动动动 500
+    if (maxEnergy >= 800) { // 带带带带带带带带动动动动动动动动 800
+        return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    } else if (maxEnergy >= 500) { // 带带带带带动动动动动 500
         return [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
     } else if (maxEnergy >= 300) { // 带带带动动动 300
         return [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
@@ -33,7 +37,9 @@ function genbodyCarryer(maxEnergy) {
 }
 
 function genbodyWorker(maxEnergy) {
-    if (maxEnergy >= 500) { // 建建带带动动动动 500
+    if (maxEnergy >= 800) { // 建建建建带带动动动动动动 800
+        return [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    } else if (maxEnergy >= 500) { // 建建带带动动动动 500
         return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
     } else if (maxEnergy >= 300) { // 建带动动 250
         return [WORK, CARRY, MOVE, MOVE]
@@ -90,7 +96,7 @@ function autoSpawnCreep(room) {
     }
 
     if (harvester1.length < MAX_HARVESTER1) {
-        var newName = 'Harvester_' + Game.time;
+        var newName = 'Harvester1_' + Game.time;
         spawn.spawnCreep(genbodyHarvester(maxEnergy), newName, { memory: { role: 'harvester1' } });
         return;
     }
@@ -102,7 +108,7 @@ function autoSpawnCreep(room) {
     }
 
     if (harvester0.length < MAX_HARVESTER0) {
-        var newName = 'Harvester_' + Game.time;
+        var newName = 'Harvester0_' + Game.time;
         spawn.spawnCreep(genbodyHarvester(maxEnergy), newName, { memory: { role: 'harvester0' } });
         return;
     }

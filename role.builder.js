@@ -12,7 +12,6 @@ var roleBuilder = {
 		if (!creep.memory.building && creep.store.getFreeCapacity() == 0) {
 			creep.memory.building = true;
 		}
-
 		if (!creep.memory.building && creepsUtils.pickupDroppedResource(creep)) {
 			return;
 		}
@@ -31,7 +30,7 @@ var roleBuilder = {
 
 			// 获取需要修复的血量最低的建筑
 			var repairTarget = creep.room.find(FIND_STRUCTURES, {
-				filter: structure => structure.hits < structure.hitsMax && structure.hits < 100
+				filter: structure => structure.hits < structure.hitsMax
 			}).reduce((min, structure) => {
 				if (min == null) { return structure }
 				return structure.hits < min.hits ? structure : min;

@@ -5,6 +5,7 @@ var creepsUtils = {
      * @returns 
      */
     pickupDroppedResource: function (creep) {
+        // 没有携带空间的跳过
         if (creep.store.getFreeCapacity() == 0) {
             return false;
         }
@@ -21,17 +22,19 @@ var creepsUtils = {
             return true;
         }
 
-        // 捡起附近墓碑的资源
+        // 查找附近墓碑的资源
         var destroyed = creep.pos.findInRange(FIND_TOMBSTONES, 5, {
             filter: tombstone => tombstone.store[RESOURCE_ENERGY] > 0
         });
 
+        // 查找附近遗址的资源
         if (destroyed == '' || destroyed.length == 0) {
             destroyed = creep.pos.findInRange(FIND_RUINS, 10, {
                 filter: ruin => ruin.store[RESOURCE_ENERGY] > 0
             });
         }
 
+        // 捡取资源
         if (destroyed.length > 0) {
             if (creep.withdraw(destroyed[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(destroyed[0], { maxRooms: 1 });
