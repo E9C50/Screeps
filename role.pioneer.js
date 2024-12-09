@@ -2,9 +2,9 @@ var creepsUtils = require('utils.creeps');
 
 var rolePioneer = {
     run: function (creep) {
-        if (!creep.memory.working) {
-            creep.memory.working = false
-        }
+        // if (!creep.memory.working) {
+        //     creep.memory.working = false
+        // }
         if (creep.memory.working && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.working = false;
         }

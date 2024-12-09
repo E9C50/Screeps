@@ -15,8 +15,9 @@ var roleBuilder = {
 
 		if (creep.memory.building) {
 			var build_target = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES, {
-				// filter: structure => structure.structureType === STRUCTURE_CONTAINER
 				filter: structure => structure.structureType === STRUCTURE_TOWER
+					|| structure.structureType === STRUCTURE_CONTAINER
+					|| structure.structureType === STRUCTURE_EXTENSION
 			});
 			if (!build_target) {
 				build_target = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
@@ -44,7 +45,7 @@ var roleBuilder = {
 					const target = structures[0];
 
 					if (creep.repair(target) === ERR_NOT_IN_RANGE) {
-						creep.moveTo(target, { maxRooms: 1,  visualizePathStyle: { stroke: '#ffffff' } });
+						creep.moveTo(target, { maxRooms: 1, visualizePathStyle: { stroke: '#ffffff' } });
 					}
 				}
 			}
@@ -67,7 +68,7 @@ var roleBuilder = {
 			});
 
 			if (creep.withdraw(most_container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-				creep.moveTo(most_container, { maxRooms: 1,  visualizePathStyle: { stroke: '#ffaa00' } });
+				creep.moveTo(most_container, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
 			}
 		}
 	}

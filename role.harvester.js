@@ -1,8 +1,8 @@
 var roleHarvester = {
     run: function (creep, resource_type, resource_index) {
-        if (creep.memory.harvesting == undefined) {
-            creep.memory.harvesting = true
-        }
+        // if (creep.memory.harvesting == undefined) {
+        //     creep.memory.harvesting = true
+        // }
         if (!creep.memory.harvesting && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.harvesting = true;
         }

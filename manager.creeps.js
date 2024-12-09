@@ -9,7 +9,7 @@ var roomUtils = require('utils.room');
 
 const MAX_CARRYER = 2;
 const MAX_PIONEER = 2;
-const MAX_BUILDER = 1;
+const MAX_BUILDER = 4;
 const MAX_UPGRADER = 4;
 
 // 矿工数量自动根据坑位计算
@@ -59,6 +59,7 @@ function autoSpawnCreep(room) {
         )
     }
 
+    // 自动计算挖矿坑位
     MAX_HARVESTER0 = roomUtils.getCanHarvesterPos(room, FIND_SOURCES, 0);
     MAX_HARVESTER1 = roomUtils.getCanHarvesterPos(room, FIND_SOURCES, 1);
 
@@ -66,6 +67,7 @@ function autoSpawnCreep(room) {
     var extension_count = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_EXTENSION }).length;
     var max_energy = extension_count * 50 + 300
 
+    // 获取房间内的相关建筑
     var spawn = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_SPAWN })[0]
     var containers = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_CONTAINER })
 
@@ -73,6 +75,7 @@ function autoSpawnCreep(room) {
         return
     }
 
+    // 打印生成信息
     if (spawn.spawning) {
         var spawningCreep = Game.creeps[spawn.spawning.name];
         spawn.room.visual.text('🛠️' + spawningCreep.memory.role,
