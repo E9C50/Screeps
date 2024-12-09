@@ -77,6 +77,13 @@ function autoSpawnCreep(room) {
     var spawn = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_SPAWN })[0]
     var containers = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_CONTAINER })
 
+    // 判断是否需要生产Builder
+    var constructionSiteCount = spawn.room.find(FIND_CONSTRUCTION_SITES).length;
+    var needRepairCount = spawn.room.find(FIND_STRUCTURES, {
+        filter: structure => structure.hits < structure.hitsMax
+    }).length;
+    var needBuilder = constructionSiteCount > 0 || needRepairCount > 0;
+
     if (!spawn) {
         return
     }
@@ -113,7 +120,7 @@ function autoSpawnCreep(room) {
         return;
     }
 
-    if (builder.length < MAX_BUILDER && spawn.room.find(FIND_CONSTRUCTION_SITES).length >= 1) {
+    if (builder.length < MAX_BUILDER && needBuilder) {
         var newName = 'Builder_' + Game.time;
         spawn.spawnCreep(genbodyWorker(maxEnergy), newName, { memory: { role: 'builder' } });
         return;
