@@ -3,8 +3,8 @@ var roomUtils = {
         var enemys = room.find(FIND_HOSTILE_CREEPS);
         return enemys != '';
     },
-    getCanHarvesterPos: function (room, resource_type, resource_index) {
-        var targetResource = room.find(resource_type)[resource_index];
+    getCanHarvesterPos: function (room, resourceType, resourceIndex) {
+        var targetResource = room.find(resourceType)[resourceIndex];
         var targetPos = targetResource.pos;
 
         const surroundingPositions = [

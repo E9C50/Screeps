@@ -17,16 +17,16 @@ var rolePioneer = {
         }
 
         if (creep.memory.working) {
-            var build_target = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
-            if (build_target) {
-                if (creep.build(build_target) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(build_target, { maxRooms: 1, visualizePathStyle: { stroke: '#ffffff' } });
+            var buildTarget = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
+            if (buildTarget) {
+                if (creep.build(buildTarget) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(buildTarget, { maxRooms: 1, visualizePathStyle: { stroke: '#ffffff' } });
                 }
             }
         } else {
-            var closest_resource = creep.pos.findClosestByRange(FIND_SOURCES);
-            if (creep.harvest(closest_resource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(closest_resource, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
+            var closestResource = creep.pos.findClosestByRange(FIND_SOURCES);
+            if (creep.harvest(closestResource) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(closestResource, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
             }
         }
     }

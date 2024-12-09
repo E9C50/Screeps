@@ -19,7 +19,7 @@ function findEnemy(tower) {
 }
 
 function findStructureToRepair(tower) {
-    const structure_to_repair = tower.room.find(FIND_STRUCTURES, {
+    const structureToRepair = tower.room.find(FIND_STRUCTURES, {
         filter: structure => structure.hits < structure.hitsMax
         // && structure.structureType !== STRUCTURE_WALL
         // && structure.structureType !== STRUCTURE_RAMPART
@@ -28,8 +28,8 @@ function findStructureToRepair(tower) {
         return structure.hits < min.hits ? structure : min;
     }, null);
 
-    if (!structure_to_repair) {
-        structure_to_repair = tower.room.find(FIND_STRUCTURES, {
+    if (!structureToRepair) {
+        structureToRepair = tower.room.find(FIND_STRUCTURES, {
             filter: structure => (structure.structureType == STRUCTURE_WALL
                 || structure.structureType == STRUCTURE_RAMPART)
                 && structure.hits < structure.hitsMax
@@ -38,7 +38,7 @@ function findStructureToRepair(tower) {
             return structure.hits < min.hits ? structure : min;
         }, null);
     }
-    return structure_to_repair
+    return structureToRepair
 }
 
 var towerManager = {
@@ -52,7 +52,7 @@ var towerManager = {
 
         for (var index in towers) {
             var tower = towers[index];
-            var tower_energy = tower.store[RESOURCE_ENERGY];
+            var towerEnergy = tower.store[RESOURCE_ENERGY];
 
             // 检测敌人并攻击，优先攻击治疗单位 -> 远程攻击单位 -> 攻击单位 -> 其他
             var enemy = findEnemy(tower);
@@ -62,7 +62,7 @@ var towerManager = {
             }
 
             // 只有energy大于500时，才会修复建筑物/治疗单位（储备弹药优先攻击敌人）
-            if (tower_energy < 500) {
+            if (towerEnergy < 500) {
                 return;
             }
 

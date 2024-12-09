@@ -21,7 +21,7 @@ var roleUpgrader = {
                 creep.moveTo(creep.room.controller, { maxRooms: 1, visualizePathStyle: { stroke: '#ffffff' } });
             }
         } else {
-            const most_container = creep.room.find(FIND_STRUCTURES, {
+            const mostContainer = creep.room.find(FIND_STRUCTURES, {
                 filter: container =>
                     container.structureType === STRUCTURE_CONTAINER
                     && container.store[RESOURCE_ENERGY] > 500
@@ -32,14 +32,14 @@ var roleUpgrader = {
                 return max;
             }, null);
 
-            var closest_container = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            var closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: structure =>
                     structure.structureType === STRUCTURE_CONTAINER
                     && structure.store[RESOURCE_ENERGY] > 500
             });
 
-            if (creep.withdraw(most_container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(most_container, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
+            if (creep.withdraw(mostContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(closestContainer, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
             }
         }
     }

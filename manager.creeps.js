@@ -16,26 +16,26 @@ const MAX_UPGRADER = 4;
 var MAX_HARVESTER0 = 0;
 var MAX_HARVESTER1 = 0;
 
-function genbody_harvester(max_energy) {
-    if (max_energy >= 500) { // 建建建建带动 500
+function genbodyHarvester(maxEnergy) {
+    if (maxEnergy >= 500) { // 建建建建带动 500
         return [WORK, WORK, WORK, WORK, CARRY, MOVE]
-    } else if (max_energy >= 300) { // 建建带动 300
+    } else if (maxEnergy >= 300) { // 建建带动 300
         return [WORK, WORK, CARRY, MOVE]
     }
 }
 
-function genbody_carryer(max_energy) {
-    if (max_energy >= 500) { // 带带带带带动动动动动 500
+function genbodyCarryer(maxEnergy) {
+    if (maxEnergy >= 500) { // 带带带带带动动动动动 500
         return [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
-    } else if (max_energy >= 300) { // 带带带动动动 300
+    } else if (maxEnergy >= 300) { // 带带带动动动 300
         return [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
     }
 }
 
-function genbody_worker(max_energy) {
-    if (max_energy >= 500) { // 建建带带动动动动 500
+function genbodyWorker(maxEnergy) {
+    if (maxEnergy >= 500) { // 建建带带动动动动 500
         return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
-    } else if (max_energy >= 300) { // 建带动动 250
+    } else if (maxEnergy >= 300) { // 建带动动 250
         return [WORK, CARRY, MOVE, MOVE]
     }
 }
@@ -64,8 +64,8 @@ function autoSpawnCreep(room) {
     MAX_HARVESTER1 = roomUtils.getCanHarvesterPos(room, FIND_SOURCES, 1);
 
     // 获取房间可生产最大energy值
-    var extension_count = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_EXTENSION }).length;
-    var max_energy = extension_count * 50 + 300
+    var extensionCount = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_EXTENSION }).length;
+    var maxEnergy = extensionCount * 50 + 300
 
     // 获取房间内的相关建筑
     var spawn = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_SPAWN })[0]
@@ -85,37 +85,37 @@ function autoSpawnCreep(room) {
 
     if (pioneer < MAX_PIONEER && containers.length == 0) {
         var newName = 'Pioneer_' + Game.time;
-        spawn.spawnCreep(genbody_worker(max_energy), newName, { memory: { role: 'pioneer' } });
+        spawn.spawnCreep(genbodyWorker(maxEnergy), newName, { memory: { role: 'pioneer' } });
         return;
     }
 
     if (harvester1.length < MAX_HARVESTER1) {
         var newName = 'Harvester_' + Game.time;
-        spawn.spawnCreep(genbody_harvester(max_energy), newName, { memory: { role: 'harvester1' } });
+        spawn.spawnCreep(genbodyHarvester(maxEnergy), newName, { memory: { role: 'harvester1' } });
         return;
     }
 
     if (carryer.length < MAX_CARRYER) {
         var newName = 'Carryer_' + Game.time;
-        spawn.spawnCreep(genbody_carryer(max_energy), newName, { memory: { role: 'carryer' } });
+        spawn.spawnCreep(genbodyCarryer(maxEnergy), newName, { memory: { role: 'carryer' } });
         return;
     }
 
     if (harvester0.length < MAX_HARVESTER0) {
         var newName = 'Harvester_' + Game.time;
-        spawn.spawnCreep(genbody_harvester(max_energy), newName, { memory: { role: 'harvester0' } });
+        spawn.spawnCreep(genbodyHarvester(maxEnergy), newName, { memory: { role: 'harvester0' } });
         return;
     }
 
     if (builder.length < MAX_BUILDER && spawn.room.find(FIND_CONSTRUCTION_SITES).length >= 1) {
         var newName = 'Builder_' + Game.time;
-        spawn.spawnCreep(genbody_worker(max_energy), newName, { memory: { role: 'builder' } });
+        spawn.spawnCreep(genbodyWorker(maxEnergy), newName, { memory: { role: 'builder' } });
         return;
     }
 
     if (upgrader.length < MAX_UPGRADER) {
         var newName = 'Upgrader_' + Game.time;
-        spawn.spawnCreep(genbody_worker(max_energy), newName, { memory: { role: 'upgrader' } });
+        spawn.spawnCreep(genbodyWorker(maxEnergy), newName, { memory: { role: 'upgrader' } });
         return;
     }
 }

@@ -1,5 +1,5 @@
 var roleHarvester = {
-    run: function (creep, resource_type, resource_index) {
+    run: function (creep, resourceType, resourceIndex) {
         // if (creep.memory.harvesting == undefined) {
         //     creep.memory.harvesting = true
         // }
@@ -10,12 +10,12 @@ var roleHarvester = {
             creep.memory.harvesting = false;
         }
 
-        var target_resource = creep.room.find(resource_type)[resource_index];
+        var targetResource = creep.room.find(resourceType)[resourceIndex];
 
         // 采集矿物
         if (creep.memory.harvesting) {
-            if (creep.harvest(target_resource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target_resource, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
+            if (creep.harvest(targetResource) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(targetResource, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
             }
         }
 
