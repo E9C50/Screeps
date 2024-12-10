@@ -9,7 +9,7 @@ var roomUtils = require('utils.room');
 
 const MAX_CARRYER = 2;
 const MAX_PIONEER = 2;
-const MAX_BUILDER = 2;
+const MAX_BUILDER = 4;
 const MAX_UPGRADER = 4;
 
 // 矿工数量自动根据坑位计算

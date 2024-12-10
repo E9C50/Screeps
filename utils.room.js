@@ -82,10 +82,14 @@ var roomUtils = {
             new RoomPosition(targetPos.x + 1, targetPos.y, targetPos.roomName),      // 右
         ].map(pos => room.lookForAt(LOOK_TERRAIN, pos)).filter(terrain => terrain != 'wall').length
 
+        console.log(positionCount);
+
         if (topLeft == 3) { positionCount += 1 }
         if (topRight == 3) { positionCount += 1 }
         if (bottomLeft == 3) { positionCount += 1 }
         if (bottomRight == 3) { positionCount += 1 }
+        console.log(positionCount);
+        console.log('=================');
 
         // const surroundingPositions = [
         //     new RoomPosition(targetPos.x - 1, targetPos.y - 1, targetPos.roomName),  // 左上
