@@ -103,7 +103,7 @@ var roomUtils = {
         const terrains = surroundingPositions
             .map(pos => room.lookForAt(LOOK_TERRAIN, pos))
             .filter(terrain => terrain != 'wall');
-        return 8 - terrains.length
+        return terrains.length
     }
 }
 module.exports = roomUtils;
