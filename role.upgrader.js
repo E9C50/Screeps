@@ -1,7 +1,7 @@
 var creepsUtils = require('utils.creeps');
 
 // 资源获取模式，true：距离最近的；false：存货最多的
-const sourceClosestMode = true;
+const sourceClosestMode = false;
 
 var roleUpgrader = {
     run: function (creep) {
