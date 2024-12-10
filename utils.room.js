@@ -9,6 +9,23 @@ var roomUtils = {
         return enemys != '';
     },
     /**
+     * 获取当前房间所有spawn和extension中存储的energy数量
+     * @param {*} room 
+     * @returns 
+     */
+    getTotalEnergy: function (room) {
+        const spawns = room.find(FIND_MY_SPAWNS);
+        const extensions = room.find(FIND_MY_STRUCTURES, {
+            filter: structure => structure.structureType === STRUCTURE_EXTENSION
+        });
+
+        let totalEnergy = 0;
+        spawns.forEach(spawn => totalEnergy += spawn.store[RESOURCE_ENERGY]);
+        extensions.forEach(extension => totalEnergy += extension.store[RESOURCE_ENERGY]);
+
+        return totalEnergy;
+    },
+    /**
      * 获取指定位置周围8格的非墙位置数量
      * @param {*} room 
      * @param {*} resourceType 

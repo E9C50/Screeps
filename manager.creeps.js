@@ -8,7 +8,7 @@ var rolePioneer = require('role.pioneer');
 var roomUtils = require('utils.room');
 
 const MAX_CARRYER = 2;
-const MAX_PIONEER = 2;
+const MAX_PIONEER = 3;
 const MAX_BUILDER = 4;
 const MAX_UPGRADER = 10;
 
@@ -16,34 +16,68 @@ const MAX_UPGRADER = 10;
 var MAX_HARVESTER0 = 0;
 var MAX_HARVESTER1 = 0;
 
-function genbodyHarvester(maxEnergy) {
-    if (maxEnergy >= 800) { // 建建建建建建建带动 800
-        return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE]
-    } else if (maxEnergy >= 500) { // 建建建建带动 500
-        return [WORK, WORK, WORK, WORK, CARRY, MOVE]
-    } else if (maxEnergy >= 300) { // 建建带动 300
-        return [WORK, WORK, CARRY, MOVE]
+function genbodyHarvester(maxEnergy, totalEnergy, forceSpawn) {
+    var energy = forceSpawn ? totalEnergy : maxEnergy;
+    energy = Math.max(300, energy);
+    var bodyParts = [];
+
+    bodyParts.push(CARRY);
+    bodyParts.push(MOVE);
+    energy -= BODYPART_COST.carry;
+    energy -= BODYPART_COST.move;
+
+    var workCount = parseInt(energy / BODYPART_COST.work);
+    for (let i = 0; i < workCount; i++) {
+        bodyParts.push(WORK);
     }
+
+    return bodyParts;
 }
 
-function genbodyCarryer(maxEnergy) {
-    if (maxEnergy >= 800) { // 带带带带带带带带动动动动动动动动 800
-        return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
-    } else if (maxEnergy >= 500) { // 带带带带带动动动动动 500
-        return [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
-    } else if (maxEnergy >= 300) { // 带带带动动动 300
-        return [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
+function genbodyCarryer(maxEnergy, totalEnergy, forceSpawn) {
+    var energy = forceSpawn ? totalEnergy : maxEnergy;
+    energy = Math.max(300, energy);
+    var bodyParts = [];
+
+    var totalPartCount = energy / 50;
+    if (totalPartCount % 2 == 1) {
+        totalPartCount -= 1;
     }
+
+    var singlePartCount = totalPartCount / 2;
+
+    for (let i = 0; i < singlePartCount; i++) {
+        bodyParts.push(MOVE);
+        bodyParts.push(CARRY);
+    }
+
+    return bodyParts;
 }
 
-function genbodyWorker(maxEnergy) {
-    if (maxEnergy >= 800) { // 建建建建带带动动动动动动 800
-        return [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
-    } else if (maxEnergy >= 500) { // 建建带带动动动动 500
-        return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
-    } else if (maxEnergy >= 300) { // 建带动动 250
-        return [WORK, CARRY, MOVE, MOVE]
+function genbodyWorker(maxEnergy, totalEnergy, forceSpawn) {
+    var energy = forceSpawn ? totalEnergy : maxEnergy;
+    energy = Math.max(300, energy);
+    var bodyParts = [];
+
+    bodyParts.push(CARRY);
+    bodyParts.push(MOVE);
+    energy -= BODYPART_COST.carry;
+    energy -= BODYPART_COST.move;
+
+    while (energy >= 150) {
+        bodyParts.push(WORK);
+        bodyParts.push(MOVE);
+        energy -= BODYPART_COST.work;
+        energy -= BODYPART_COST.move;
     }
+
+    if (energy == 100) {
+        bodyParts.push(CARRY);
+        bodyParts.push(MOVE);
+        energy -= BODYPART_COST.carry;
+        energy -= BODYPART_COST.move;
+    }
+    return bodyParts;
 }
 
 function autoSpawnCreep(room) {
@@ -54,16 +88,12 @@ function autoSpawnCreep(room) {
     var builder = _.filter(Game.creeps, (creep) => creep.room.name == room.name && creep.memory.role == 'builder');
     var upgrader = _.filter(Game.creeps, (creep) => creep.room.name == room.name && creep.memory.role == 'upgrader');
 
-    if (Game.time % 1 === 0) {
-        console.log(room.name, ' ',
-            'pioneer ', pioneer.length, ' ',
-            'carryer ', carryer.length, ' ',
-            'harvester0 ', harvester0.length, ' ',
-            'harvester1 ', harvester1.length, ' ',
-            'builder ', builder.length, ' ',
-            'upgrader ', upgrader.length
-        )
-    }
+    // 显示单位信息
+    var logInfo = room.name +
+        ' pioneer ' + pioneer.length + ' carryer ' + carryer.length +
+        ' harvester0 ' + harvester0.length + ' harvester1 ' + harvester1.length +
+        ' builder ' + builder.length + ' upgrader ' + upgrader.length;
+    room.visual.text(logInfo, 0, 1, { align: 'left' });
 
     // 自动计算挖矿坑位
     MAX_HARVESTER0 = roomUtils.getCanHarvesterPos(room, FIND_SOURCES, 0);
@@ -72,6 +102,7 @@ function autoSpawnCreep(room) {
     // 获取房间可生产最大energy值
     var extensionCount = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_EXTENSION }).length;
     var maxEnergy = extensionCount * 50 + 300
+    var totalEnergy = roomUtils.getTotalEnergy(room);
 
     // 获取房间内的相关建筑
     var spawn = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_SPAWN })[0]
@@ -84,51 +115,48 @@ function autoSpawnCreep(room) {
     }).length;
     var needBuilder = constructionSiteCount > 0 || needRepairCount > 0;
 
-    if (!spawn) {
-        return
-    }
+    if (!spawn) { return; }
 
     // 打印生成信息
     if (spawn.spawning) {
         var spawningCreep = Game.creeps[spawn.spawning.name];
-        spawn.room.visual.text('🛠️' + spawningCreep.memory.role,
-            spawn.pos.x + 1, spawn.pos.y, { align: 'left', opacity: 0.8 });
+        spawn.room.visual.text('🛠️' + spawningCreep.memory.role, spawn.pos.x + 1, spawn.pos.y);
         return;
     }
 
-    if (pioneer < MAX_PIONEER && containers.length == 0) {
+    if (pioneer.length < MAX_PIONEER && containers.length == 0) {
         var newName = 'Pioneer_' + Game.time;
-        spawn.spawnCreep(genbodyWorker(maxEnergy), newName, { memory: { role: 'pioneer' } });
+        spawn.spawnCreep(genbodyWorker(maxEnergy, totalEnergy, true), newName, { memory: { role: 'pioneer' } });
+        return;
+    }
+
+    if (carryer.length < MAX_CARRYER && (harvester1.length > 0 || harvester0.length > 0)) {
+        var newName = 'Carryer_' + Game.time;
+        spawn.spawnCreep(genbodyCarryer(maxEnergy, totalEnergy, true), newName, { memory: { role: 'carryer' } });
         return;
     }
 
     if (harvester1.length < MAX_HARVESTER1) {
         var newName = 'Harvester1_' + Game.time;
-        spawn.spawnCreep(genbodyHarvester(maxEnergy), newName, { memory: { role: 'harvester1' } });
-        return;
-    }
-
-    if (carryer.length < MAX_CARRYER) {
-        var newName = 'Carryer_' + Game.time;
-        spawn.spawnCreep(genbodyCarryer(maxEnergy), newName, { memory: { role: 'carryer' } });
+        spawn.spawnCreep(genbodyHarvester(maxEnergy, totalEnergy, carryer.length == 0), newName, { memory: { role: 'harvester1' } });
         return;
     }
 
     if (harvester0.length < MAX_HARVESTER0) {
         var newName = 'Harvester0_' + Game.time;
-        spawn.spawnCreep(genbodyHarvester(maxEnergy), newName, { memory: { role: 'harvester0' } });
+        spawn.spawnCreep(genbodyHarvester(maxEnergy, totalEnergy, false), newName, { memory: { role: 'harvester0' } });
         return;
     }
 
     if (builder.length < MAX_BUILDER && needBuilder) {
         var newName = 'Builder_' + Game.time;
-        spawn.spawnCreep(genbodyWorker(maxEnergy), newName, { memory: { role: 'builder' } });
+        spawn.spawnCreep(genbodyWorker(maxEnergy, totalEnergy, false), newName, { memory: { role: 'builder' } });
         return;
     }
 
     if (upgrader.length < MAX_UPGRADER) {
         var newName = 'Upgrader_' + Game.time;
-        spawn.spawnCreep(genbodyWorker(maxEnergy), newName, { memory: { role: 'upgrader' } });
+        spawn.spawnCreep(genbodyWorker(maxEnergy, totalEnergy, false), newName, { memory: { role: 'upgrader' } });
         return;
     }
 }

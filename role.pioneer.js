@@ -14,14 +14,44 @@ var rolePioneer = {
         }
 
         if (creep.memory.working) {
-            // 查找建造任务并执行
-            var buildTarget = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
+            // 查找建造任务并执行，优先 Spawn
+            var buildTarget = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES, {
+                filter: structure => structure.structureType === STRUCTURE_SPAWN
+            });
+            // 其次 Container
+            if (!buildTarget) {
+                buildTarget = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES, {
+                    filter: structure => structure.structureType === STRUCTURE_CONTAINER
+                });
+            }
+            // 其次 Extension
+            if (!buildTarget) {
+                buildTarget = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES, {
+                    filter: structure => structure.structureType === STRUCTURE_EXTENSION
+                });
+            }
+            // 其他类型
+            if (!buildTarget) {
+                buildTarget = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
+            }
             if (buildTarget) {
                 if (creep.build(buildTarget) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(buildTarget, { maxRooms: 1, visualizePathStyle: { stroke: '#ffffff' } });
                 }
             }
         } else {
+            // 获取距离最近的Container，有则直接拿资源，没有就去挖矿
+            var closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: structure =>
+                    structure.structureType === STRUCTURE_CONTAINER
+                    && structure.store[RESOURCE_ENERGY] > 0
+            });
+            if (closestContainer) {
+                if (creep.withdraw(targetContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(targetContainer, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
+                }
+                return;
+            }
             // 采集资源
             var closestResource = creep.pos.findClosestByRange(FIND_SOURCES);
             if (creep.harvest(closestResource) == ERR_NOT_IN_RANGE) {
