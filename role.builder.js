@@ -19,10 +19,18 @@ var roleBuilder = {
 		if (creep.memory.building) {
 			// 获取优先建造的建筑
 			var buildTarget = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES, {
-				filter: structure => structure.structureType === STRUCTURE_TOWER
-					|| structure.structureType === STRUCTURE_CONTAINER
-					|| structure.structureType === STRUCTURE_EXTENSION
+				filter: structure => structure.structureType === STRUCTURE_CONTAINER
 			});
+			if (!buildTarget) {
+				buildTarget = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES, {
+					filter: structure => structure.structureType === STRUCTURE_EXTENSION
+				});
+			}
+			if (!buildTarget) {
+				buildTarget = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES, {
+					filter: structure => structure.structureType === STRUCTURE_TOWER
+				});
+			}
 			// 其次获取其他建筑
 			if (!buildTarget) {
 				buildTarget = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
