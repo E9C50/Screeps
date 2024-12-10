@@ -31,6 +31,8 @@ var roleBuilder = {
 			// 获取需要修复的血量最低的建筑
 			var repairTarget = creep.room.find(FIND_STRUCTURES, {
 				filter: structure => structure.hits < structure.hitsMax
+					&& (structure.structureType == STRUCTURE_WALL && structure.hits <= 150000)
+					&& (structure.structureType == STRUCTURE_RAMPART && structure.hits <= 150000)
 			}).reduce((min, structure) => {
 				if (min == null) { return structure }
 				return structure.hits < min.hits ? structure : min;

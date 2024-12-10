@@ -8,9 +8,9 @@ var rolePioneer = require('role.pioneer');
 var roomUtils = require('utils.room');
 
 const MAX_CARRYER = 2;
-const MAX_PIONEER = 3;
-const MAX_BUILDER = 4;
-const MAX_UPGRADER = 10;
+const MAX_PIONEER = 2;
+const MAX_BUILDER = 2;
+const MAX_UPGRADER = 4;
 
 // 矿工数量自动根据坑位计算
 var MAX_HARVESTER0 = 0;
@@ -90,9 +90,12 @@ function autoSpawnCreep(room) {
 
     // 显示单位信息
     var logInfo = room.name +
-        ' pioneer ' + pioneer.length + ' carryer ' + carryer.length +
-        ' harvester0 ' + harvester0.length + ' harvester1 ' + harvester1.length +
-        ' builder ' + builder.length + ' upgrader ' + upgrader.length;
+        ' pioneer [ ' + pioneer.length + '/' + MAX_PIONEER +
+        ' ] carryer [ ' + carryer.length + '/' + MAX_CARRYER +
+        ' ] harvester0 [ ' + harvester0.length + '/' + MAX_HARVESTER0 +
+        ' ] harvester1 [ ' + harvester1.length + '/' + MAX_HARVESTER1 +
+        ' ] builder [ ' + builder.length + '/' + MAX_BUILDER +
+        ' ] upgrader [ ' + upgrader.length + '/' + MAX_UPGRADER + ' ]';
     room.visual.text(logInfo, 0, 1, { align: 'left' });
 
     // 自动计算挖矿坑位
@@ -111,7 +114,7 @@ function autoSpawnCreep(room) {
     // 判断是否需要生产Builder
     var constructionSiteCount = spawn.room.find(FIND_CONSTRUCTION_SITES).length;
     var needRepairCount = spawn.room.find(FIND_STRUCTURES, {
-        filter: structure => structure.hits < structure.hitsMax
+        filter: structure => structure.hits < structure.hitsMax && structure.hits < 1000
     }).length;
     var needBuilder = constructionSiteCount > 0 || needRepairCount > 0;
 
@@ -120,7 +123,7 @@ function autoSpawnCreep(room) {
     // 打印生成信息
     if (spawn.spawning) {
         var spawningCreep = Game.creeps[spawn.spawning.name];
-        spawn.room.visual.text('🛠️' + spawningCreep.memory.role, spawn.pos.x + 1, spawn.pos.y);
+        spawn.room.visual.text('🛠️Spawing ' + spawningCreep.memory.role, 0, 2, { align: 'left' });
         return;
     }
 

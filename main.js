@@ -1,8 +1,9 @@
 var roomManager = require('manager.room');
-var towerManager = require('manager.tower');
 var creepManager = require('manager.creeps');
 var controlManager = require('manager.control');
 var trafficManager = require('manager.traffic');
+
+var towerManager = require('structure.tower');
 
 trafficManager.init();
 

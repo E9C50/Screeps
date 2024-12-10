@@ -39,6 +39,26 @@ var roleCarryer = {
                 structures = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return structure.structureType == STRUCTURE_TOWER
+                            && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 100;
+                    }
+                });
+            }
+
+            // 其次查找10格以内的Link
+            if (structures == '') {
+                structures = creep.pos.findInRange(FIND_STRUCTURES, 10, {
+                    filter: (structure) => {
+                        return structure.structureType == STRUCTURE_LINK
+                            && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                    }
+                });
+            }
+
+            // 其次查找Storage
+            if (structures == '') {
+                structures = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType == STRUCTURE_STORAGE
                             && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     }
                 });
