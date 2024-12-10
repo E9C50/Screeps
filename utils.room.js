@@ -55,7 +55,7 @@ var roomUtils = {
             .map(pos => room.lookForAt(LOOK_TERRAIN, pos))
             .filter(terrain => terrain != 'wall');
 
-        var positionCount = 4 - terrains.length
+        var positionCount = terrains.length
 
         var topLeft = [
             new RoomPosition(targetPos.x - 1, targetPos.y - 1, targetPos.roomName),  // 左上
