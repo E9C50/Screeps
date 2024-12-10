@@ -41,14 +41,14 @@ var rolePioneer = {
             }
         } else {
             // 获取距离最近的Container，有则直接拿资源，没有就去挖矿
-            var closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            var closestContainer = creep.pos.findInRange(FIND_STRUCTURES, 5, {
                 filter: structure =>
                     structure.structureType === STRUCTURE_CONTAINER
                     && structure.store[RESOURCE_ENERGY] > 0
-            });
+            })[0];
             if (closestContainer) {
-                if (creep.withdraw(targetContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targetContainer, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
+                if (creep.withdraw(closestContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(closestContainer, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
                 }
                 return;
             }
