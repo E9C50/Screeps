@@ -10,7 +10,6 @@ trafficManager.init();
 module.exports.loop = function () {
     // 利用空闲CPU生成Pixel
     if (typeof Game.cpu.generatePixel === 'function') {
-        console.log(Game.cpu.bucket);
         Game.cpu.generatePixel();
     }
 
