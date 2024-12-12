@@ -26,6 +26,18 @@ var roleHarvester = {
 
         // 存放矿物
         if (!creep.memory.harvesting) {
+            var repairTarget = creep.pos.findInRange(FIND_STRUCTURES, 5, {
+                filter: structure => structure.hits < structure.hitsMax
+                    && structure.structureType == STRUCTURE_CONTAINER
+            }).reduce((min, structure) => {
+                if (min == null) { return structure }
+                return structure.hits < min.hits ? structure : min;
+            }, null);
+
+            if (repairTarget) {
+                creep.repair(repairTarget);
+            }
+
             // 优先放在距离5以内的Container中
             var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: structure =>

@@ -1,3 +1,5 @@
+const roomUtils = require("./utils.room");
+
 function safemodeChecker(room) {
     const structures = room.find(FIND_STRUCTURES);
 
@@ -22,6 +24,8 @@ var roomManager = {
             var room = Game.rooms[roomName];
             // 检测敌人和攻击，开启安全模式
             safemodeChecker(room);
+
+            roomUtils.distanceCompute(room);
         }
     }
 };

@@ -38,9 +38,11 @@ var roleBuilder = {
 
 			// 获取需要修复的血量最低的建筑
 			var repairTarget = creep.room.find(FIND_STRUCTURES, {
-				filter: structure => structure.hits < structure.hitsMax
-					&& (structure.structureType == STRUCTURE_WALL && structure.hits <= 150000)
-					&& (structure.structureType == STRUCTURE_RAMPART && structure.hits <= 150000)
+				filter: structure => (structure.hits < structure.hitsMax
+					&& structure.structureType != STRUCTURE_WALL
+					&& structure.structureType != STRUCTURE_RAMPART)
+					|| (structure.structureType == STRUCTURE_WALL && structure.hits <= 100000)
+					|| (structure.structureType == STRUCTURE_RAMPART && structure.hits <= 100000)
 			}).reduce((min, structure) => {
 				if (min == null) { return structure }
 				return structure.hits < min.hits ? structure : min;
@@ -60,8 +62,8 @@ var roleBuilder = {
 		} else {
 			// 获取存货最多的Container
 			const mostContainer = creep.room.find(FIND_STRUCTURES, {
-				filter: container =>
-					container.structureType === STRUCTURE_CONTAINER
+				filter: container => (container.structureType === STRUCTURE_CONTAINER
+					|| container.structureType === STRUCTURE_STORAGE)
 					&& container.store[RESOURCE_ENERGY] > 200
 			}).reduce((max, container) => {
 				if (container.store[RESOURCE_ENERGY] > (max ? max.store[RESOURCE_ENERGY] : 0)) {

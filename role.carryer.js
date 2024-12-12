@@ -17,22 +17,27 @@ var roleCarryer = {
         if (!creep.memory.carrying) {
             // 寻找最近的有资源的Container，并拿取资源
             var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter: structure =>
-                    structure.structureType === STRUCTURE_CONTAINER
+                filter: structure => structure.structureType === STRUCTURE_CONTAINER
                     && structure.store[RESOURCE_ENERGY] > 0
             });
+            if (!target) {
+                target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                    filter: structure => structure.structureType === STRUCTURE_STORAGE
+                        && structure.store[RESOURCE_ENERGY] > 0
+                });
+            }
             if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, { maxRooms: 1, visualizePathStyle: { stroke: '#ffaa00' } });
             }
         } else {
             // 优先查找资源不足的Spawn和Extension
-            var structures = creep.room.find(FIND_STRUCTURES, {
+            var structures = [creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_EXTENSION
                         || structure.structureType == STRUCTURE_SPAWN)
                         && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 }
-            });
+            })];
 
             // 其次查找Tower（若为战斗模式，强制优先Tower）
             if (roomUtils.isFighting(creep.room) || structures == '') {

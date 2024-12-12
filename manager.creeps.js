@@ -9,8 +9,8 @@ var roomUtils = require('utils.room');
 
 const MAX_CARRYER = 2;
 const MAX_PIONEER = 2;
-const MAX_BUILDER = 4;
-const MAX_UPGRADER = 4;
+const MAX_BUILDER = 6;
+const MAX_UPGRADER = 6;
 
 // 矿工数量自动根据坑位计算
 var MAX_HARVESTER0 = 0;
@@ -19,6 +19,7 @@ var MAX_HARVESTER1 = 0;
 function genbodyHarvester(maxEnergy, totalEnergy, forceSpawn) {
     var energy = forceSpawn ? totalEnergy : maxEnergy;
     energy = Math.max(300, energy);
+    energy -= energy % 50;
     var bodyParts = [];
 
     bodyParts.push(CARRY);
@@ -37,6 +38,7 @@ function genbodyHarvester(maxEnergy, totalEnergy, forceSpawn) {
 function genbodyCarryer(maxEnergy, totalEnergy, forceSpawn) {
     var energy = forceSpawn ? totalEnergy : maxEnergy;
     energy = Math.max(300, energy);
+    energy -= energy % 50;
     var bodyParts = [];
 
     var totalPartCount = energy / 50;
@@ -57,6 +59,7 @@ function genbodyCarryer(maxEnergy, totalEnergy, forceSpawn) {
 function genbodyWorker(maxEnergy, totalEnergy, forceSpawn) {
     var energy = forceSpawn ? totalEnergy : maxEnergy;
     energy = Math.max(300, energy);
+    energy -= energy % 50;
     var bodyParts = [];
 
     bodyParts.push(CARRY);
@@ -99,8 +102,10 @@ function autoSpawnCreep(room) {
     room.visual.text(logInfo, 0, 1, { align: 'left' });
 
     // 自动计算挖矿坑位
-    MAX_HARVESTER0 = roomUtils.getCanHarvesterPos(room, FIND_SOURCES, 0);
-    MAX_HARVESTER1 = roomUtils.getCanHarvesterPos(room, FIND_SOURCES, 1);
+    if (Game.time % 10 == 0) {
+        MAX_HARVESTER0 = Math.min(roomUtils.getCanHarvesterPos(room, FIND_SOURCES, 0), 3);
+        MAX_HARVESTER1 = Math.min(roomUtils.getCanHarvesterPos(room, FIND_SOURCES, 1), 3);
+    }
 
     // 获取房间可生产最大energy值
     var extensionCount = room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_EXTENSION }).length;
@@ -114,7 +119,7 @@ function autoSpawnCreep(room) {
     // 判断是否需要生产Builder
     var constructionSiteCount = spawn.room.find(FIND_CONSTRUCTION_SITES).length;
     var needRepairCount = spawn.room.find(FIND_STRUCTURES, {
-        filter: structure => structure.hits < structure.hitsMax && structure.hits < 1000
+        filter: structure => structure.hits < structure.hitsMax && structure.hits < 100000
     }).length;
     var needBuilder = constructionSiteCount > 0 || needRepairCount > 0;
 
@@ -139,15 +144,15 @@ function autoSpawnCreep(room) {
         return;
     }
 
-    if (harvester1.length < MAX_HARVESTER1) {
-        var newName = 'Harvester1_' + Game.time;
-        spawn.spawnCreep(genbodyHarvester(maxEnergy, totalEnergy, carryer.length == 0), newName, { memory: { role: 'harvester1' } });
-        return;
-    }
-
     if (harvester0.length < MAX_HARVESTER0) {
         var newName = 'Harvester0_' + Game.time;
         spawn.spawnCreep(genbodyHarvester(maxEnergy, totalEnergy, false), newName, { memory: { role: 'harvester0' } });
+        return;
+    }
+
+    if (harvester1.length < MAX_HARVESTER1) {
+        var newName = 'Harvester1_' + Game.time;
+        spawn.spawnCreep(genbodyHarvester(maxEnergy, totalEnergy, carryer.length == 0), newName, { memory: { role: 'harvester1' } });
         return;
     }
 
